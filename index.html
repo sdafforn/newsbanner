@@ -1,8 +1,29 @@
 <html lang="en">
   <head>
     <title>Daily News-Banner Edition</title>
+    <style>
+        div {
+            font-family: monospace;
+            display: block;
+            padding: 100px;
+            background: transparent;
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+        }
+        a {
+            color: #e6e8f0;
+            font-size: large;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: #81c995;
+            text-decoration: underline;
+        }
+    </style>
   </head>
-  <body>
+  <body style="background-color: black";>
     <div id="dailyEditionContainer"></div>
 
     <script>
@@ -23,7 +44,7 @@
             const day = today.toLocaleDateString(locale, { weekday: 'long' });
 
             const dayLabel = !isSunday ? "today" : "yesterday";
-            const label = `News-Banner edition for ${dayLabel}, ${day}, ${month} ${dd}`;
+            const label = `Click here to see the News-Banner edition for ${dayLabel}, ${day}, ${month} ${dd}`;
 
             const url = `https://news-banner.com/wp-content/uploads/${yyyy}/${MM}/${MM}-${dd}-${yyyy}.pdf`;
             let anchorElement = document.createElement("a");
@@ -33,7 +54,9 @@
 
             const container = document.getElementById("dailyEditionContainer");
             container.appendChild(anchorElement);
+            console.log(url);
         });
     </script>
   </body>
 </html>
+
