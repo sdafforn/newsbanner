@@ -1,0 +1,39 @@
+<html lang="en">
+  <head>
+    <title>Daily News-Banner Edition</title>
+  </head>
+  <body>
+    <div id="dailyEditionContainer"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            const locale = "en-US";
+            const today = new Date();
+            const dayOfWeek = today.toLocaleDateString(locale, { weekday: 'long' });
+            let isSunday = false;
+            if (dayOfWeek === "Sunday"){
+                isSunday = true;
+                today.setDate(today.getDate() - 1);
+            }
+
+            const MM = today.getMonth() + 1;
+            const dd = today.getDate().toString().padStart(2, '0');
+            const yyyy = today.getFullYear();
+            const month = today.toLocaleString(locale, { month: 'long' });
+            const day = today.toLocaleDateString(locale, { weekday: 'long' });
+
+            const dayLabel = !isSunday ? "today" : "yesterday";
+            const label = `News-Banner edition for ${dayLabel}, ${day}, ${month} ${dd}`;
+
+            const url = `https://news-banner.com/wp-content/uploads/${yyyy}/${MM}/${MM}-${dd}-${yyyy}.pdf`;
+            let anchorElement = document.createElement("a");
+            anchorElement.target = "_blank";
+            anchorElement.textContent = label;
+            anchorElement.href = url;
+
+            const container = document.getElementById("dailyEditionContainer");
+            container.appendChild(anchorElement);
+        });
+    </script>
+  </body>
+</html>
