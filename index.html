@@ -37,7 +37,7 @@
                 today.setDate(today.getDate() - 1);
             }
 
-            const MM = today.getMonth() + 1;
+            const MM = String(today.getMonth() + 1).padStart(2, '0');
             const dd = today.getDate().toString().padStart(2, '0');
             const yyyy = today.getFullYear();
             const month = today.toLocaleString(locale, { month: 'long' });
