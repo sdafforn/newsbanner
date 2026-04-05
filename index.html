@@ -1,100 +1,112 @@
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
   <head>
-    <title>Daily News-Banner Edition</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>Daily News-Banner</title>
+
+    <!-- Pico.css -->
+    <link href="assets/css/pico/pico-2.1.1.min.css" rel="stylesheet">
     <link href="assets/css/vanilla-calendar-pro/index-3.1.0.css" rel="stylesheet">
     <script src="assets/js/vanilla-calendar-pro/index-3.1.0.js" defer></script>
     <style>
-        [data-vc-theme=dark].vc {
-            background-color: #000;
-        }
-        [data-vc-week-day] {
-            font-family: 'Lato', 'Helvetica', 'Arial', sans-serif;
-        }
-        #calendar {
-            margin-top: 15px;
-        }
-        .content {
-            font-family: monospace;
-            color: #e6e8f0;
-            font-size: large;
-            display: block;
-            padding-top: 50px;
-            padding-bottom: 25px;
-            padding-left: 100px;
-            padding-right: 100px;
-            background: transparent;
-            overflow-x: auto;
-            display: flex;
-            justify-content: center;
-        }
-        a {
-            color: #e6e8f0;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        a:hover {
-            color: #81c995;
-            text-decoration: underline;
-        }
+      hr {
+        margin-top: 2.5rem;
+        margin-bottom: 2rem;
+      }
     </style>
   </head>
-  <body style="background-color: black";>
-    <div class="content" id="dailyEditionContainer"></div>
 
-    <div class="content" id="calendarInstructions">Alternatively, use the calendar below to choose a specific publication date.</div>
+  <body>
+    <!-- Header -->
+    <header class="container">
+      <hgroup>
+        <h1>Daily News-Banner</h1>
+        <p>View current or past editions.</p>
+      </hgroup>
+    </header>
+    <!-- ./ Header -->
 
-    <div id="calendar" style="display: flex; align-items: center"></div>
+    <!-- Main -->
+    <main class="container">
+      <!-- Current and Past Editions -->
+      <section id="editions">
+        <h2>Current Edition</h2>
+        <p>
+          <a id="currentEditionLink" class="primary" target="_blank"></a>
+        </p>
+
+        <hr/>
+        <h3>Past Editions</h3>
+        <p>
+          Alternatively, use the calendar below to view the edition for a publication date in the past.
+        </p>
+        <div id="calendar"></div>
+      </section>
+      <!-- ./ Current and Past Editions -->
+    </main>
+    <!-- ./ Main -->
+
+    <!-- Footer -->
+    <footer class="container">
+      <small>Built by 3 Meats Enterprises • Celebrating the enduring legacy of Jim Barbieri</small>
+    </footer>
+    <!-- ./ Footer -->
 
     <script>
+        const locale = "en-US";
+
+        const getEditionUrl = (mm, dd, yyyy) => {
+          return `https://news-banner.com/wp-content/uploads/${yyyy}/${mm}/${mm}-${dd}-${yyyy}.pdf`;
+        };
+
+        const getCurrentEditionUrl = (day) => {
+          const mm = String(day.getMonth() + 1).padStart(2, '0');
+          const dd = day.getDate().toString().padStart(2, '0');
+          const yyyy = day.getFullYear();
+          return getEditionUrl(mm, dd, yyyy);
+        };
+
         document.addEventListener("DOMContentLoaded", function(event) {
-            const locale = "en-US";
-            const today = new Date();
-            const dayOfWeek = today.toLocaleDateString(locale, { weekday: 'long' });
-            let isSunday = false;
-            if (dayOfWeek === "Sunday"){
-                isSunday = true;
-                today.setDate(today.getDate() - 1);
-            }
+          // default edition link
+          const today = new Date();
+          const month = today.toLocaleString(locale, { month: 'long' });
+          let dayOfWeek = today.toLocaleDateString(locale, { weekday: 'long' });
+          let dd = today.getDate().toString().padStart(2, '0');
+          let isSunday = false;
+          if (dayOfWeek === "Sunday"){
+              isSunday = true;
+              today.setDate(today.getDate() - 1);
+              dayOfWeek = today.toLocaleDateString(locale, { weekday: 'long' });
+              dd = today.getDate().toString().padStart(2, '0');
+          }
+          const dayLabel = !isSunday ? "today," : "";
 
-            const baseUrl = "https://news-banner.com/wp-content/uploads";
-            const MM = String(today.getMonth() + 1).padStart(2, '0');
-            const dd = today.getDate().toString().padStart(2, '0');
-            const yyyy = today.getFullYear();
-            const month = today.toLocaleString(locale, { month: 'long' });
-            const day = today.toLocaleDateString(locale, { weekday: 'long' });
+          const anchor = document.getElementById("currentEditionLink");
+          anchor.textContent = `Click here to see the edition for ${dayLabel} ${dayOfWeek}, ${month} ${dd}`;
+          anchor.href = getCurrentEditionUrl(today);
 
-            const dayLabel = !isSunday ? "today" : "yesterday";
-            const label = `Click here to see the News-Banner edition for ${dayLabel}, ${day}, ${month} ${dd}`;
+          // calendar
+          const { Calendar } = window.VanillaCalendarPro;
+          const calendar = new Calendar('#calendar', {
+            selectedWeekends: [0], //only mark Sundays as weekends
+            disableWeekdays: [0], //only mark Sundays as disabled
+            dateMax: new Date().toISOString().split('T')[0], //no future dates
+            selectedTheme: 'dark',
+            selectionDatesMode: 'single', //no date range selection
+            onClickDate(self, event) {
+                if(self?.context?.selectedDates?.length == 1) {
+                    const day = self.context.selectedDates[0].split("-");
+                    const yyyy = day[0];
+                    const mm = day[1];
+                    const dd = day[2];
+                    window.open(getEditionUrl(mm, dd, yyyy), '_blank');
+                }
+            },
+          });
+          calendar.init();
 
-            const url = `${baseUrl}/${yyyy}/${MM}/${MM}-${dd}-${yyyy}.pdf`;
-
-            let anchorElement = document.createElement("a");
-            anchorElement.textContent = label;
-            anchorElement.href = url;
-
-            const container = document.getElementById("dailyEditionContainer");
-            container.appendChild(anchorElement);
-
-            // calendar
-            const { Calendar } = window.VanillaCalendarPro;
-            const calendar = new Calendar('#calendar', {
-              selectedWeekends: [0], //only mark Sundays as weekends
-              disableWeekdays: [0], //only mark Sundays as disabled
-              dateMax: new Date().toISOString().split('T')[0], //no future dates
-              selectedTheme: 'dark',
-              selectionDatesMode: 'single', //no date range selection
-              onClickDate(self, event) {
-                  if(self?.context?.selectedDates?.length && self.context.selectedDates.length == 1) {
-                      const day = self.context.selectedDates[0].split("-");
-                      const yyyy = day[0];
-                      const MM = day[1];
-                      const dd = day[2];
-                      const url = `${baseUrl}/${yyyy}/${MM}/${MM}-${dd}-${yyyy}.pdf`;
-                      window.open(url, '_blank');
-                  }
-              },
-            });
-            calendar.init();
         });
     </script>
   </body>
