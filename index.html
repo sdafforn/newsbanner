@@ -92,7 +92,7 @@
           const calendar = new Calendar('#calendar', {
             selectedWeekends: [0], //only mark Sundays as weekends
             disableWeekdays: [0], //only mark Sundays as disabled
-            dateMax: new Date().toISOString().split('T')[0], //no future dates
+            dateMax: new Date().toLocaleDateString('en-CA'), //no future dates
             selectedTheme: 'dark',
             selectionDatesMode: 'single', //no date range selection
             onClickDate(self, event) {
