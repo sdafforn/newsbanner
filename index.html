@@ -87,11 +87,32 @@
           anchor.textContent = `Click here to see the edition for ${dayLabel} ${dayOfWeek}, ${month} ${dd}`;
           anchor.href = getCurrentEditionUrl(today);
 
+          const dateChange = (calendar) => {
+              const selectedMonth = calendar.context.selectedMonth;
+              const selectedYear = calendar.context.selectedYear;
+              // no Monday editions after May, 2026
+              let daysToExclude;
+              if(selectedYear >= 2026 && selectedMonth > 4){
+                daysToExclude = [0,1];
+              }
+              else{
+                daysToExclude = [0];
+              }
+              calendar.set({
+                selectedWeekends: daysToExclude,
+                disableWeekdays: daysToExclude,
+              }, {
+                year: false,
+                month: false,
+                dates: false
+              });
+          };
+
           // calendar
           const { Calendar } = window.VanillaCalendarPro;
           const calendar = new Calendar('#calendar', {
-            selectedWeekends: [0], //only mark Sundays as weekends
-            disableWeekdays: [0], //only mark Sundays as disabled
+            selectedWeekends: [0,1], //only mark Sundays and Mondays as weekends
+            disableWeekdays: [0,1], //only mark Sundays and Mondays as disabled
             dateMax: new Date().toLocaleDateString('en-CA'), //no future dates
             selectedTheme: 'dark',
             selectionDatesMode: 'single', //no date range selection
@@ -104,9 +125,17 @@
                     window.open(getEditionUrl(mm, dd, yyyy), '_blank');
                 }
             },
+            onClickArrow(self, event) {
+              dateChange(self);
+            },
+            onClickMonth(self, event) {
+              dateChange(self);
+            },
+            onClickYear(self, event) {
+              dateChange(self);
+            },
           });
           calendar.init();
-
         });
     </script>
   </body>
