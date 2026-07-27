@@ -77,7 +77,8 @@
           let isPublishedToday = true;
           if (dayOfWeek === "Sunday" || dayOfWeek === "Monday"){
               isPublishedToday = false;
-              today.setDate(today.getDate() - dayOfWeek === "Sunday" ? 1 : 2);
+              const offset = dayOfWeek === "Sunday" ? 1 : 2;
+              today.setDate(today.getDate() - offset);
               dayOfWeek = today.toLocaleDateString(locale, { weekday: 'long' });
               dd = today.getDate().toString().padStart(2, '0');
           }
